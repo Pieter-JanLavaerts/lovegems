@@ -1,6 +1,7 @@
 local view = {}
 
 follow_i = 0
+board = {}
 function view.init(w, h, b)
 	window_width = w
 	window_height = h
@@ -40,15 +41,6 @@ local function draw_gem(r, c, i)
 	)
 end
 
-function view.clear(r, c)
-	table.insert(updates, {r, c, 1})
-end
-
-function view.draw(r, c, i)
-	print("draw("..r..", "..c..")")
-	table.insert(updates, {r, c, i+1})
-end
-
 function view.follow(y, x, i)
 	print("view.follow called")
 	follow_y = y
@@ -61,17 +53,26 @@ function view.drop()
 	follow_i = 0
 end
 
+board_width = 4
+board_height = 15
+function view.draw(b)
+	board = b
+end
 function love.draw()
-	if updates then
-		for i, u in ipairs(updates) do
-			draw_gem(u[1], u[2], u[3])
+	if (board == nil) then
+		return
+	end
+	for r, board_width in ipairs(board) do
+		for c, board_width in ipairs(board) do
+			if not (board[r][c] == nil) then
+				draw_gem(r, c, board[r][c]+1)
+			end
 		end
 	end
-	updates = {}
 
 	if not ((follow_i == 0) or (follow_i == nil)) then
 		x, y = love.mouse.getPosition()
-		--love.graphics.draw(images[follow_i], x-u, y-u, 0, scale, scale)
+		love.graphics.draw(images[follow_i], x-u, y-u, 0, scale, scale)
 		follow_x = x
 		follow_y = y
 	end
